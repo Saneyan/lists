@@ -1,4 +1,128 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/app-datepicker/app-datepicker.html">
+
+<script>
+  
+  var LabelBehavior = {
+    
+    properties: {
+      move: {
+        type: Object,
+        value: { top: 0, left: 0 }
+      }
+    },
+    
+    _track: function (e){
+      switch (e.detail.state) {
+        case 'start':
+          var bounding = e.target.getBoundingClientRect();
+          this.move.top = bounding.top;
+          this.move.left = bounding.left;
+          e.target.style.position = 'absolute';
+          break;
+        case 'track':
+          e.target.style.top = (this.move.top + e.detail.dy) + 'px';
+          e.target.style.left = (this.move.left + e.detail.dx) + 'px';
+          break;
+        case 'end':
+          this.move.top = 0;
+          this.move.left = 0;
+          e.target.style.position = 'static';
+          break;
+      }
+      return true;
+    }
+    
+  };
+  
+</script>
+
+<dom-module id="my-todo">
+  
+  <template>
+    
+    <style>
+      .label {
+        position: relative;
+        cursor: pointer;
+        width: 150px;
+        height: 150px;
+        padding: 20px;
+        background-color: #ffecb3;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px #444;
+      }
+    </style>
+    
+    <div on-track="_track" class="label">
+      <content></content>
+    </div>
+    
+  </template>
+  
+  <script>
+    Polymer({
+      
+      'is': 'my-todo',
+      
+      behaviors: [LabelBehavior]
+      
+    })
+  </script>
+  
+  
+</dom-module>
+
+<dom-module id="my-label">
+  
+  <template>
+    
+    <style>
+      .label {
+        position: relative;
+        cursor: pointer;
+        width: 150px;
+        height: 150px;
+        padding: 20px;
+        line-height: 75px;
+        text-align: center;
+        background-color: #ffecb3;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px #444;
+        font-size: 30px;
+      }
+      
+      iron-icon {
+        --iron-icon-width: 75px;
+        --iron-icon-height: 75px;
+      }
+    </style>
+    
+    <div on-track="_track" class="label">
+      <iron-icon icon="face"></iron-icon><br>
+      <content></content>
+    </div>
+    
+  </template>
+  
+  <script>
+    Polymer({
+      
+      'is': 'my-label',
+      
+      behaviors: [LabelBehavior]
+      
+    })
+  </script>
+  
+</dom-module>
 
 <dom-module id="my-app">
 
@@ -10,45 +134,196 @@
         margin-left: 20px;
       }
       
-      .blue, .green {
-        position: relative;
-        width: 800px;
-        height: 200px;
+      #blue, #green {
+        overflow: hidden;
+        min-height: 150px;
+        padding-top: 25px;
+        padding-left: 75px;
+        margin-bottom: 10px;
       }
       
-      .green {
-        background-color: #8BC34A;
+      #green {
+        background-color: #4CAF50;
       }
       
-      .blue {
-        background-color: #1976D2;
+      #blue {
+        background-color: #03A9F4;
       }
       
-      .label {
-        cursor: pointer;
+      .icon {
+        position: absolute;
+        left: 25px;
+        height: 100%;
+        line-height: 100%;
+        color: white;
+      }
+      
+      .icon iron-icon {
+        --iron-icon-width: 50px;
+        --iron-icon-height: 50px;
+      }
+      
+      my-label, my-todo {
         float:left;
-        width: 150px;
-        height: 150px;
-        margin-top: 25px;
         margin-left: 25px;
-        background-color: #ffffff;
-        box-shadow: 0 3px 10px #000;
+        margin-bottom: 25px;
       }
       
+      h1 {
+        text-align: center;
+      }
+      
+      h1 iron-icon {
+        color: #303F9F;
+        --iron-icon-width: 40px;
+        --iron-icon-height: 40px;
+        margin-top: -5px;
+        margin-right: 10px;
+      }
+      
+      #entry {
+        text-align: center;
+      }
+      
+      app-datepicker {
+        width: 450px;
+        margin: 0 auto;
+      }
+      
+      #entry paper-button {
+        margin-top: 20px;
+      }
+      
+      #open {
+        width: 60px;
+        height: 60px;
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        color: white;
+        background: #448aff;
+        border-radius: 60px;
+        box-shadow: 0 1px 5px #000;
+      }
+      
+      .input {
+        width: 500px;
+        margin: 0 auto;
+      }
+      
+      #dialog {
+        width: 900px;
+      }
+      
+      #result {
+        text-align: center;
+      }
+      
+      .most, .least {
+        padding: 20px;
+      }
+      
+      .most {
+        color: red;
+        font-size: 30px;
+      }
+      
+      .least {
+        color: #999;
+        font-size: 28px;
+      }
     </style>
 
-    <main>
-      <h1>Board</h1>
+    <h1><iron-icon icon="dashboard"></iron-icon></h1>
+    
+    <iron-pages id="pages" selected="entry" attr-for-selected="id">
+      <div id="main">
+        
+        <paper-icon-button id="open" icon="add"></paper-icon-button>
+        
+        <div id="blue">
+          <div class="icon">
+            <iron-icon icon="clear"></iron-icon>
+          </div>
+          <template is="dom-repeat" items="{{labels}}">
+            <template is="dom-if" if="{{_isBlue(item.type)}}">
+              <my-label>{{item.text}}</my-label>
+            </template>
+          </template>
+        </div>
+        
+        <div id="green">
+          <div class="icon">
+            <iron-icon icon="radio-button-unchecked"></iron-icon>
+          </div>
+          <template is="dom-repeat" items="{{labels}}">
+            <template is="dom-if" if="{{_isGreen(item.type)}}">
+              <my-label>{{item.text}}</my-label>
+            </template>
+          </template>
+        </div>
+        
+        <div id="result">
+          <h1>Result</h1>
+          <span class="most">7/22</span>
+          <span class="least">6/31</span>
+        </div>
+        
+        <paper-dialog id="dialog">
+          <div>
+            <form id="form" is="iron-form">
+              <paper-input id="name" class="input" label="Name"></paper-input>
+            </form>
+            <app-datepicker></app-datepicker>
+          </div>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button id="add" dialog-confirm>Accept</paper-button>
+          </div> 
+        </paper-dialog>
+        
+      </div>
       
-      <div class="blue">
-        <div class="label">Test</div>
-        <div class="label">Test</div>
-        <div class="label">Test</div>
-        <div class="label">Test</div>
+      <div id="todo">
+        
+        <paper-icon-button id="open-todo" icon="add"></paper-icon-button>
+        
+        <div id="blue-todo">
+          <div class="icon">
+            <iron-icon icon="alarm-on"></iron-icon>
+          </div>
+          <template is="dom-repeat" items="{{todos}}">
+            <template is="dom-if" if="{{_isBlue(item.type)}}">
+              <my-todo>{{item.text}}</my-todo>
+            </template>
+          </template>
+        </div>
+        
+        <div id="green-todo">
+          <div class="icon">
+            <iron-icon icon="done"></iron-icon>
+          </div>
+          <template is="dom-repeat" items="{{todos}}">
+            <template is="dom-if" if="{{_isGreen(item.type)}}">
+              <my-todo>{{item.text}}</my-todo>
+            </template>
+          </template>
+        </div>
       </div>
-      <div class="green">
+      
+      <div id="entry">
+        
+        <h1>Pick your date</h1>
+        
+        <app-datepicker></app-datepicker>
+        
+        <paper-button id="next" raidsed style="background: #a0bc61; color: white">Next</paper-button>
+        
+        <h1>Create todo</h1>
+        
+        <paper-button id="next-to-todo" raidsed style="background: #a0bc61; color: white">Next</paper-button>
       </div>
-    </main>
+    </iron-pages>
 
   </template>
 
@@ -58,25 +333,90 @@
 
       is: 'my-app',
       
+      listeners: {
+        'next.tap': '_next',
+        'next-to-todo.tap': '_nextToTodo',
+        'open.tap': '_open',
+        'add.tap': '_add'
+      },
+      
       properties: {
         labels: {
           value: [{
+            id: '1',
+            type: 'green',
+            text: '片山佑樹'
+          }, {
+            id: '2',
+            type: 'blue',
+            text: '大澤悠子'
+          }, {
+            id: '3',
+            type: 'green',
+            text: '田所浩二'
+          }, {
+            id: '4',
+            type: 'green',
+            text: '八代翔'
+          }]
+        },
+        
+        todos: {
+          value: [{
+            id: '1',
+            type: 'green',
+            text: 'シーン12-13 撮影'
+          }, {
+            id: '2',
+            type: 'blue',
+            text: 'シーン25-9 音声が入りにくいため撮り直し'
           }]
         }
       },
       
       ready: function () {
-      }
-
-    });
-    
-    window.addEventListener('WebComponentsReady', function () {
-      var labels = document.querySelectorAll('.label');
+        this.$.blue.addEventListener('mouseup', function (e) {
+          if (e.target.tagName.toLowerCase() === 'my-label') {
+            this.$.green.appendChild(e.target);
+          }
+        }.bind(this), true);
+        
+        this.$.green.addEventListener('mouseup', function (e) {
+          if (e.target.tagName.toLowerCase() === 'my-label') {
+            this.$.blue.appendChild(e.target);
+          }
+        }.bind(this), true);
+      },
       
-      labels.forEach(function (label) {
-        label.addEventListener('click', function () {
-        });
-      });
+      _open: function () {
+        this.$.dialog.open();
+      },
+      
+      _add: function () {
+        this.push('labels', {
+          id: String(this.labels.length),
+          type: 'blue',
+          text: this.$.name.value
+        })
+        
+        this.$.form.reset();
+      },
+      
+      _isBlue: function (type) {
+        return type === 'blue';
+      },
+      
+      _isGreen: function (type) {
+        return type === 'green';
+      },
+      
+      _next: function () {
+        this.$.pages.select('main');
+      },
+      
+      _nextToTodo: function () {
+        this.$.pages.select('todo');
+      }
     });
     
   </script>
